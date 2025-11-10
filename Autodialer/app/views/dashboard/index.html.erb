@@ -1,0 +1,408 @@
+<div class="row">
+  <!-- Page Header -->
+  <div class="col-12 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="h3 mb-0">
+          <i class="bi bi-speedometer2 text-primary"></i>
+          Dashboard
+        </h1>
+        <p class="text-muted mb-0">Monitor your autodialer activity and performance</p>
+      </div>
+      <div>
+        <small class="text-muted">
+          Last updated: <%= Time.current.strftime("%H:%M:%S") %>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Command Interface -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="ai-command-box">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="mb-3">
+            <i class="bi bi-robot"></i>
+            AI Assistant
+          </h5>
+          <div class="input-group">
+            <input type="text" 
+                   id="aiCommandInput" 
+                   class="form-control" 
+                   placeholder="Try: 'Start calling', 'Call 9876543210', 'Show today's logs'..."
+                   onkeypress="handleAiCommand(event)">
+            <button class="btn btn-light" onclick="submitAiCommand()">
+              <i class="bi bi-send"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="voice-controls">
+            <button class="record-btn" id="voiceBtn" onclick="toggleVoiceCommand()" title="Voice Command">
+              <i class="bi bi-mic"></i>
+            </button>
+            <small class="text-light">Voice Commands</small>
+          </div>
+        </div>
+      </div>
+      
+      <!-- AI Response Area -->
+      <div id="aiResponse" style="display: none;" class="ai-response mt-3">
+        <div id="aiResponseText"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5 class="card-title text-primary"><%= @stats[:total_numbers] %></h5>
+            <p class="card-text text-muted mb-0">Total Numbers</p>
+          </div>
+          <div class="align-self-center">
+            <i class="bi bi-telephone text-primary" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+        <div class="mt-2">
+          <small class="text-success">
+            <i class="bi bi-arrow-up"></i>
+            <%= @stats[:pending_numbers] %> pending
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5 class="card-title text-success"><%= @stats[:successful_calls] %></h5>
+            <p class="card-text text-muted mb-0">Successful Calls</p>
+          </div>
+          <div class="align-self-center">
+            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+        <div class="mt-2">
+          <small class="text-success">
+            <%= @stats[:success_rate] %>% success rate
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5 class="card-title text-info"><%= @stats[:today_calls] %></h5>
+            <p class="card-text text-muted mb-0">Today's Calls</p>
+          </div>
+          <div class="align-self-center">
+            <i class="bi bi-calendar-day text-info" style="font-size: 2rem;"></i>
+          </div>
+        </div>
+        <div class="mt-2">
+          <small class="text-info">
+            <%= @stats[:today_successful] %> completed, <%= @stats[:today_failed] %> failed
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5 class="card-title text-warning"><%= @stats[:active_calls] %></h5>
+            <p class="card-text text-muted mb-0">Active Calls</p>
+          </div>
+          <div class="align-self-center">
+            <% if @stats[:active_calls] > 0 %>
+              <div class="loading-spinner"></div>
+            <% else %>
+              <i class="bi bi-pause-circle text-muted" style="font-size: 2rem;"></i>
+            <% end %>
+          </div>
+        </div>
+        <div class="mt-2">
+          <small class="<%= @stats[:active_calls] > 0 ? 'text-warning' : 'text-muted' %>">
+            <% if @stats[:active_calls] > 0 %>
+              <i class="bi bi-arrow-repeat"></i> In progress
+            <% else %>
+              <i class="bi bi-pause"></i> No active calls
+            <% end %>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row">
+  <!-- Recent Call Logs -->
+  <div class="col-lg-8 mb-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="bi bi-clock-history"></i>
+          Recent Call Logs
+        </h5>
+        <%= link_to "View All", call_logs_path, class: "btn btn-outline-primary btn-sm" %>
+      </div>
+      <div class="card-body">
+        <% if @recent_calls.any? %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Phone Number</th>
+                  <th>Status</th>
+                  <th>Duration</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_calls.each do |call| %>
+                  <tr class="call-log-row">
+                    <td>
+                      <span class="phone-number-display">
+                        <%= call.phone_number.formatted_number %>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge status-badge bg-<%= call_status_color(call.status) %>">
+                        <%= call.status.humanize %>
+                      </span>
+                    </td>
+                    <td>
+                      <% if call.duration_seconds > 0 %>
+                        <%= call.duration_formatted %>
+                      <% else %>
+                        <span class="text-muted">-</span>
+                      <% end %>
+                    </td>
+                    <td class="text-muted">
+                      <%= time_ago_in_words(call.created_at) %> ago
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="text-center py-4">
+            <i class="bi bi-telephone-x text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-2">No call logs yet. Start by adding phone numbers and making calls.</p>
+            <%= link_to "Add Phone Numbers", phone_numbers_path, class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Phone Numbers Summary -->
+  <div class="col-lg-4 mb-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="bi bi-list-ol"></i>
+          Phone Numbers
+        </h5>
+        <%= link_to "Manage", phone_numbers_path, class: "btn btn-outline-primary btn-sm" %>
+      </div>
+      <div class="card-body">
+        <% if @phone_numbers.any? %>
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Pending</span>
+              <span class="badge bg-warning"><%= @stats[:pending_numbers] %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Completed</span>
+              <span class="badge bg-success"><%= @stats[:completed_numbers] %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Failed</span>
+              <span class="badge bg-danger"><%= @stats[:failed_numbers] %></span>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <h6 class="text-muted mb-2">Recent Numbers</h6>
+          <% @phone_numbers.limit(5).each do |phone_number| %>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="phone-number-display small">
+                <%= phone_number.formatted_number %>
+              </span>
+              <span class="badge status-badge bg-<%= phone_status_color(phone_number.status) %>">
+                <%= phone_number.status %>
+              </span>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-3">
+            <i class="bi bi-plus-circle text-muted" style="font-size: 2rem;"></i>
+            <p class="text-muted mt-2 mb-3">No phone numbers added yet.</p>
+            <%= link_to "Add Numbers", phone_numbers_path, class: "btn btn-primary btn-sm" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Recent AI Commands -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6 class="mb-0">
+          <i class="bi bi-chat-dots"></i>
+          Recent AI Commands
+        </h6>
+      </div>
+      <div class="card-body">
+        <% if @ai_commands.any? %>
+          <% @ai_commands.each do |command| %>
+            <div class="mb-2 pb-2 border-bottom">
+              <div class="small text-muted">
+                <%= time_ago_in_words(command.created_at) %> ago
+              </div>
+              <div class="small">
+                <strong><%= command.parsed_action&.humanize || 'Unknown' %></strong>
+              </div>
+              <div class="small text-muted">
+                <%= truncate(command.input_text, length: 50) %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted small mb-0">No AI commands yet. Try asking something!</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for AI Commands -->
+<script>
+  function handleAiCommand(event) {
+    if (event.key === 'Enter') {
+      submitAiCommand();
+    }
+  }
+  
+  function submitAiCommand() {
+    const input = document.getElementById('aiCommandInput');
+    const command = input.value.trim();
+    
+    if (!command) return;
+    
+    showAiResponse('Processing command...', 'info');
+    
+    fetch('/ai_commands/process_text_command', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ command: command })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showAiResponse(data.response, 'success');
+        input.value = '';
+        
+        // Refresh page if it was a system command
+        if (['start_calling', 'show_logs', 'show_statistics'].includes(data.action)) {
+          setTimeout(() => window.location.reload(), 2000);
+        }
+      } else {
+        showAiResponse('Sorry, I encountered an error processing your command.', 'error');
+      }
+    })
+    .catch(error => {
+      showAiResponse('Network error. Please try again.', 'error');
+    });
+  }
+  
+  function showAiResponse(message, type) {
+    const responseDiv = document.getElementById('aiResponse');
+    const responseText = document.getElementById('aiResponseText');
+    
+    responseText.innerHTML = `
+      <div class="d-flex align-items-start">
+        <i class="bi bi-robot me-2 mt-1"></i>
+        <div>${message}</div>
+      </div>
+    `;
+    
+    responseDiv.style.display = 'block';
+    
+    if (type === 'success') {
+      responseDiv.className = 'ai-response mt-3';
+    } else if (type === 'error') {
+      responseDiv.className = 'ai-response mt-3 bg-danger-subtle border-danger';
+    } else {
+      responseDiv.className = 'ai-response mt-3 bg-info-subtle border-info';
+    }
+  }
+  
+  function toggleVoiceCommand() {
+    const btn = document.getElementById('voiceBtn');
+    
+    if (btn.classList.contains('recording')) {
+      // Stop recording
+      btn.classList.remove('recording');
+      btn.innerHTML = '<i class="bi bi-mic"></i>';
+      showAiResponse('Voice commands are simulated in this demo. Try typing a command instead.', 'info');
+    } else {
+      // Start recording
+      btn.classList.add('recording');
+      btn.innerHTML = '<i class="bi bi-mic-fill"></i>';
+      
+      // Simulate recording for 3 seconds
+      setTimeout(() => {
+        btn.classList.remove('recording');
+        btn.innerHTML = '<i class="bi bi-mic"></i>';
+      }, 3000);
+    }
+  }
+</script>
+
+<!-- Helper methods for status colors -->
+<%
+  def call_status_color(status)
+    case status
+    when 'completed' then 'success'
+    when 'failed', 'no-answer', 'cancelled' then 'danger'
+    when 'busy' then 'warning'
+    when 'queued', 'ringing', 'in-progress' then 'primary'
+    else 'secondary'
+    end
+  end
+  
+  def phone_status_color(status)
+    case status
+    when 'completed' then 'success'
+    when 'failed' then 'danger'
+    when 'calling' then 'warning'
+    when 'pending' then 'secondary'
+    else 'light'
+    end
+  end
+%>

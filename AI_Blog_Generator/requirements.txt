@@ -1,0 +1,26 @@
+# AI Blog Generator Requirements
+
+# Core dependencies
+requests>=2.31.0
+python-dotenv>=1.0.0
+markdown>=3.5.0
+beautifulsoup4>=4.12.0
+jinja2>=3.1.0
+
+# API clients
+google-generativeai>=0.3.0  # For Gemini API
+openai>=1.0.0               # For ChatGPT API
+httpx>=0.25.0               # For Perplexity API
+
+# Utility libraries
+pydantic>=2.0.0
+rich>=13.0.0                # For beautiful console output
+click>=8.1.0                # For CLI interface
+pathlib>=1.0.0
+datetime
+json5>=0.9.0
+
+# Optional: For advanced features
+pillow>=10.0.0              # For image processing
+matplotlib>=3.7.0           # For generating charts/graphs
+numpy>=1.24.0               # For data processing

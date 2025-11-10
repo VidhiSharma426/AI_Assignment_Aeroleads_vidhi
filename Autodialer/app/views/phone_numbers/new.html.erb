@@ -1,0 +1,76 @@
+<div class="row">
+  <div class="col-lg-6 mx-auto">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0">
+          <i class="bi bi-plus-circle text-primary"></i>
+          Add Phone Number
+        </h4>
+      </div>
+      <div class="card-body">
+        <%= form_with model: @phone_number, local: true do |form| %>
+          <% if @phone_number.errors.any? %>
+            <div class="alert alert-danger">
+              <h6>Please fix the following errors:</h6>
+              <ul class="mb-0">
+                <% @phone_number.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= form.label :number, class: "form-label" %>
+            <%= form.text_field :number, class: "form-control", 
+                placeholder: "Enter phone number (e.g., 9876543210, 1800123456)" %>
+            <div class="form-text">
+              Supported formats: Indian mobile numbers (10 digits) and toll-free numbers (1800XXXXXXX)
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :notes, class: "form-label" %>
+            <%= form.text_area :notes, class: "form-control", rows: 3, 
+                placeholder: "Optional notes about this contact..." %>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <%= link_to "Cancel", phone_numbers_path, class: "btn btn-outline-secondary" %>
+            <%= form.submit "Add Phone Number", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Help Card -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <h6 class="card-title">
+          <i class="bi bi-info-circle text-info"></i>
+          Phone Number Formats
+        </h6>
+        <div class="row">
+          <div class="col-md-6">
+            <h6 class="text-success">Valid Examples:</h6>
+            <ul class="list-unstyled small">
+              <li><code>9876543210</code> - Mobile</li>
+              <li><code>+919876543210</code> - With country code</li>
+              <li><code>18001234567</code> - Toll-free</li>
+              <li><code>1800-123-456</code> - Formatted toll-free</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-danger">Invalid Examples:</h6>
+            <ul class="list-unstyled small">
+              <li><code>1234567890</code> - Invalid mobile</li>
+              <li><code>987654321</code> - Too short</li>
+              <li><code>98765432100</code> - Too long</li>
+              <li><code>abcd123456</code> - Contains letters</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

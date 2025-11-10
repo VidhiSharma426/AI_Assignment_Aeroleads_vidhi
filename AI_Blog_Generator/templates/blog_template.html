@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ meta_description }}">
+    <meta name="keywords" content="{{ tags|join(', ') }}">
+    <meta name="author" content="{{ author }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ meta_description }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url }}">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ title }}">
+    <meta name="twitter:description" content="{{ meta_description }}">
+    
+    <title>{{ title }} | Programming Blog</title>
+    
+    <!-- Prism.js for Code Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        
+        .meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .tags {
+            margin-bottom: 30px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 2px;
+            text-decoration: none;
+        }
+        
+        .tag:hover {
+            background: #2980b9;
+        }
+        
+        .content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .content h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .content h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .content h2:before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 30px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+        
+        .content h3 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        
+        .content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .content ul, .content ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .content li {
+            margin-bottom: 8px;
+        }
+        
+        .content code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        
+        .content pre {
+            background: #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 25px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .content pre code {
+            background: none;
+            padding: 0;
+            color: #f7fafc;
+            font-size: 0.9rem;
+        }
+        
+        .content blockquote {
+            border-left: 4px solid #3498db;
+            margin: 25px 0;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e1e5e9;
+            text-align: center;
+            color: #666;
+        }
+        
+        .author-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .share-buttons {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .share-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .share-twitter { background: #1da1f2; }
+        .share-linkedin { background: #0077b5; }
+        .share-facebook { background: #3b5998; }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px 10px;
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .content h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content h2 {
+                font-size: 1.5rem;
+            }
+            
+            .content {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Code highlight improvements */
+        .content pre[class*="language-"] {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+        }
+        
+        .language-label {
+            position: relative;
+            top: -10px;
+            right: -10px;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 0 0 0 8px;
+            font-size: 0.7rem;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">{{ title }}</h1>
+            <div class="meta">
+                <span>Published on {{ date }}</span> | 
+                <span>Generated by {{ provider|title }} AI</span> | 
+                <span>By {{ author }}</span>
+            </div>
+            
+            {% if summary %}
+            <div class="summary">
+                {{ summary }}
+            </div>
+            {% endif %}
+            
+            {% if tags %}
+            <div class="tags">
+                {% for tag in tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </header>
+        
+        <main class="content">
+            {{ content_html | safe }}
+        </main>
+        
+        <div class="share-buttons">
+            <a href="https://twitter.com/intent/tweet?text={{ title|urlencode }}&url={{ url|urlencode }}" 
+               class="share-btn share-twitter" target="_blank">Share on Twitter</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ url|urlencode }}" 
+               class="share-btn share-linkedin" target="_blank">Share on LinkedIn</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url|urlencode }}" 
+               class="share-btn share-facebook" target="_blank">Share on Facebook</a>
+        </div>
+        
+        <div class="author-info">
+            <h3>About the Author</h3>
+            <p><strong>{{ author }}</strong> - This article was generated using AI technology to provide comprehensive programming tutorials and guides. The content is designed to be practical, actionable, and suitable for developers looking to expand their skills.</p>
+        </div>
+        
+        <footer class="footer">
+            <p>&copy; {{ current_year }} {{ author }}. All rights reserved.</p>
+            <p>Generated with ❤️ using AI technology</p>
+        </footer>
+    </div>
+    
+    <!-- Prism.js for Code Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    
+    <!-- Copy code functionality -->
+    <script>
+        // Add copy buttons to code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeBlocks = document.querySelectorAll('pre[class*="language-"]');
+            
+            codeBlocks.forEach(function(codeBlock) {
+                const button = document.createElement('button');
+                button.className = 'copy-button';
+                button.textContent = 'Copy';
+                button.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                `;
+                
+                codeBlock.style.position = 'relative';
+                codeBlock.appendChild(button);
+                
+                button.addEventListener('click', function() {
+                    const code = codeBlock.querySelector('code');
+                    navigator.clipboard.writeText(code.textContent).then(function() {
+                        button.textContent = 'Copied!';
+                        setTimeout(function() {
+                            button.textContent = 'Copy';
+                        }, 2000);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

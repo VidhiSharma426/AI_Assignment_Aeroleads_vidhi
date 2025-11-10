@@ -1,0 +1,246 @@
+<div class="row">
+  <!-- Page Header -->
+  <div class="col-12 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="h3 mb-0">
+          <i class="bi bi-clock-history text-primary"></i>
+          Call Logs
+        </h1>
+        <p class="text-muted mb-0">Monitor all call activity and performance metrics</p>
+      </div>
+      <div>
+        <%= link_to call_logs_statistics_path, class: "btn btn-outline-info" do %>
+          <i class="bi bi-graph-up"></i>
+          Statistics
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-primary"><%= @stats[:total] %></h4>
+        <p class="card-text text-muted mb-0">Total Calls</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-success"><%= @stats[:completed] %></h4>
+        <p class="card-text text-muted mb-0">Completed</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-danger"><%= @stats[:failed] %></h4>
+        <p class="card-text text-muted mb-0">Failed</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-warning"><%= @stats[:in_progress] %></h4>
+        <p class="card-text text-muted mb-0">In Progress</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-3">
+  <div class="col-md-8">
+    <div class="btn-group" role="group">
+      <%= link_to "All", call_logs_path, 
+          class: "btn #{ params[:status].blank? ? 'btn-primary' : 'btn-outline-primary' }" %>
+      <%= link_to "Completed", call_logs_path(status: 'completed'), 
+          class: "btn #{ params[:status] == 'completed' ? 'btn-success' : 'btn-outline-success' }" %>
+      <%= link_to "Failed", call_logs_path(status: 'failed'), 
+          class: "btn #{ params[:status] == 'failed' ? 'btn-danger' : 'btn-outline-danger' }" %>
+      <%= link_to "In Progress", call_logs_path(status: 'in-progress'), 
+          class: "btn #{ params[:status] == 'in-progress' ? 'btn-warning' : 'btn-outline-warning' }" %>
+      <%= link_to "Today", call_logs_today_path, 
+          class: "btn #{ request.path == call_logs_today_path ? 'btn-info' : 'btn-outline-info' }" %>
+    </div>
+  </div>
+  <div class="col-md-4 text-end">
+    <div class="btn-group">
+      <%= link_to call_logs_today_path, class: "btn btn-outline-info" do %>
+        <i class="bi bi-calendar-day"></i>
+        Today's Calls
+      <% end %>
+      <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          Actions
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <%= link_to clear_all_call_logs_path, method: :delete, 
+                confirm: "Are you sure? This will delete all call logs.", 
+                class: "dropdown-item text-danger" do %>
+              <i class="bi bi-trash"></i> Clear All Logs
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Call Logs Table -->
+<div class="card">
+  <div class="card-body">
+    <% if @call_logs.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Call SID</th>
+              <th>Phone Number</th>
+              <th>Status</th>
+              <th>Duration</th>
+              <th>Cost</th>
+              <th>Started</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @call_logs.each do |call_log| %>
+              <tr class="call-log-row">
+                <td>
+                  <code class="small"><%= call_log.call_sid %></code>
+                  <% if call_log.simulation %>
+                    <br><span class="badge bg-info badge-sm">SIMULATION</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="phone-number-display">
+                    <%= call_log.phone_number.formatted_number %>
+                  </div>
+                  <small class="text-muted">
+                    From: <%= call_log.from_number %>
+                  </small>
+                </td>
+                <td>
+                  <span class="badge bg-<%= call_status_color(call_log.status) %>">
+                    <%= call_log.status.humanize %>
+                  </span>
+                  <% if call_log.error_message.present? %>
+                    <br><small class="text-danger">
+                      <i class="bi bi-exclamation-triangle"></i>
+                      <%= truncate(call_log.error_message, length: 30) %>
+                    </small>
+                  <% end %>
+                </td>
+                <td>
+                  <% if call_log.duration_seconds > 0 %>
+                    <strong><%= call_log.duration_formatted %></strong>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if call_log.cost > 0 %>
+                    <span class="text-success">
+                      <%= call_log.cost_formatted %>
+                    </span>
+                  <% else %>
+                    <span class="text-muted">$0.00</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if call_log.started_at %>
+                    <%= call_log.started_at.strftime("%m/%d %H:%M") %>
+                    <br><small class="text-muted">
+                      <%= time_ago_in_words(call_log.started_at) %> ago
+                    </small>
+                  <% else %>
+                    <span class="text-muted">Not started</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to call_log, class: "btn btn-outline-primary btn-sm" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <%= link_to call_log, method: :delete, 
+                        class: "btn btn-outline-danger btn-sm",
+                        confirm: "Delete this call log?" do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Summary -->
+      <div class="mt-3 p-3 bg-light rounded">
+        <div class="row">
+          <div class="col-md-3">
+            <strong>Total Calls:</strong> <%= @call_logs.count %>
+          </div>
+          <div class="col-md-3">
+            <strong>Success Rate:</strong> 
+            <% success_rate = @call_logs.count > 0 ? (@call_logs.select(&:successful?).count.to_f / @call_logs.count * 100).round(1) : 0 %>
+            <span class="text-<%= success_rate > 60 ? 'success' : success_rate > 30 ? 'warning' : 'danger' %>">
+              <%= success_rate %>%
+            </span>
+          </div>
+          <div class="col-md-3">
+            <strong>Total Duration:</strong> 
+            <% total_seconds = @call_logs.sum(&:duration_seconds) %>
+            <%= total_seconds > 0 ? "#{total_seconds / 60} min #{total_seconds % 60} sec" : "0 min" %>
+          </div>
+          <div class="col-md-3">
+            <strong>Total Cost:</strong> 
+            <span class="text-success">
+              $<%= @call_logs.sum(&:cost).round(4) %>
+            </span>
+          </div>
+        </div>
+      </div>
+      
+    <% else %>
+      <div class="text-center py-5">
+        <i class="bi bi-telephone-x text-muted" style="font-size: 4rem;"></i>
+        <h4 class="text-muted mt-3">No Call Logs Found</h4>
+        <p class="text-muted">
+          <% if params[:status].present? %>
+            No calls with status "<%= params[:status] %>" found.
+            <%= link_to "View all calls", call_logs_path %>
+          <% else %>
+            No calls have been made yet. Start by making some calls to see logs here.
+          <% end %>
+        </p>
+        <div class="mt-3">
+          <%= link_to "Go to Phone Numbers", phone_numbers_path, class: "btn btn-primary" %>
+          <%= link_to "Dashboard", dashboard_path, class: "btn btn-outline-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%
+  def call_status_color(status)
+    case status
+    when 'completed' then 'success'
+    when 'failed', 'no-answer', 'cancelled' then 'danger'
+    when 'busy' then 'warning'
+    when 'queued', 'ringing', 'in-progress' then 'primary'
+    else 'secondary'
+    end
+  end
+%>

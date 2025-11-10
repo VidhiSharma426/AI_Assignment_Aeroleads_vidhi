@@ -1,0 +1,22 @@
+2025-11-04 16:54:26,388 - INFO - ✅ Gemini client initialized successfully
+2025-11-04 16:54:26,388 - INFO - ✅ Perplexity client initialized successfully
+2025-11-04 16:54:26,849 - INFO - ✅ ChatGPT client initialized successfully
+2025-11-04 16:54:27,280 - ERROR - ❌ Gemini connection test failed: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-04 16:54:28,206 - INFO - HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-11-04 16:54:28,207 - ERROR - ❌ Perplexity connection test failed: Client error '401 Unauthorized' for url 'https://api.perplexity.ai/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+2025-11-04 16:54:28,599 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-11-04 16:54:28,600 - ERROR - ❌ ChatGPT connection test failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: your_ope************here. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-11-04 16:56:04,818 - INFO - ✅ Gemini client initialized successfully
+2025-11-04 16:56:04,819 - INFO - ✅ Perplexity client initialized successfully
+2025-11-04 16:56:05,313 - INFO - ✅ ChatGPT client initialized successfully
+2025-11-04 16:56:05,898 - ERROR - ❌ Error generating content with Gemini: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-04 16:56:38,867 - INFO - ✅ Gemini client initialized successfully
+2025-11-04 16:56:38,868 - INFO - ✅ Perplexity client initialized successfully
+2025-11-04 16:56:39,313 - INFO - ✅ ChatGPT client initialized successfully
+2025-11-04 16:56:39,855 - ERROR - ❌ Gemini connection test failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-04 16:56:40,560 - INFO - HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-11-04 16:56:40,560 - ERROR - ❌ Perplexity connection test failed: Client error '401 Unauthorized' for url 'https://api.perplexity.ai/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+2025-11-04 16:56:40,902 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-11-04 16:56:40,903 - ERROR - ❌ ChatGPT connection test failed: Error code: 401 - {'error': {'message': 'Incorrect API key provided: your_ope************here. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}

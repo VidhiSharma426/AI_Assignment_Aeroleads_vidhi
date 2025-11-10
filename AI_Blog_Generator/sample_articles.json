@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Building RESTful APIs with FastAPI and Python",
+    "description": "Complete guide covering FastAPI setup, routing, authentication, database integration with SQLAlchemy, request/response models with Pydantic, middleware, error handling, testing, and deployment. Include practical examples and best practices."
+  },
+  {
+    "title": "React Hooks Deep Dive: useState, useEffect, and Custom Hooks",
+    "description": "Comprehensive tutorial on React Hooks including useState for state management, useEffect for side effects, custom hooks creation, performance optimization, common pitfalls, and real-world examples with functional components."
+  },
+  {
+    "title": "Docker Containerization for Node.js Applications",
+    "description": "Step-by-step guide to containerizing Node.js apps with Docker, including Dockerfile best practices, multi-stage builds, optimization techniques, environment variables, Docker Compose for development, and production deployment strategies."
+  },
+  {
+    "title": "Advanced JavaScript: Promises, Async/Await, and Error Handling",
+    "description": "Deep dive into asynchronous JavaScript patterns including Promise API, async/await syntax, error handling with try/catch, parallel execution, race conditions, and performance considerations with practical examples."
+  },
+  {
+    "title": "Building Scalable Microservices with Spring Boot",
+    "description": "Complete guide to creating microservices architecture using Spring Boot, including service discovery with Eureka, API gateway, configuration management, distributed tracing, inter-service communication, and deployment patterns."
+  },
+  {
+    "title": "GraphQL vs REST: When to Use Which API Design",
+    "description": "Detailed comparison of GraphQL and REST APIs, implementation examples in Node.js and Python, performance considerations, caching strategies, tooling ecosystem, and decision framework for choosing the right approach for your project."
+  },
+  {
+    "title": "Machine Learning Model Deployment with Python and AWS",
+    "description": "Practical guide to deploying ML models using Flask/FastAPI, containerization with Docker, AWS services (EC2, Lambda, SageMaker), model versioning, monitoring with CloudWatch, auto-scaling, and CI/CD pipelines for ML workflows."
+  },
+  {
+    "title": "Modern CSS Grid and Flexbox Layout Techniques",
+    "description": "Comprehensive guide to CSS Grid and Flexbox with practical examples, responsive design patterns, browser compatibility, debugging tools, performance considerations, and comparison of when to use Grid vs Flexbox."
+  },
+  {
+    "title": "Database Design Patterns: SQL vs NoSQL Decision Guide",
+    "description": "Deep dive into database design patterns, ACID vs BASE properties, when to use SQL (PostgreSQL, MySQL) vs NoSQL (MongoDB, DynamoDB), schema design best practices, normalization, indexing strategies, and performance optimization."
+  },
+  {
+    "title": "CI/CD Pipeline Automation with GitHub Actions",
+    "description": "Complete guide to setting up automated CI/CD pipelines using GitHub Actions, including workflow syntax, testing automation, build optimization, deployment strategies, secrets management, matrix builds, and monitoring."
+  },
+  {
+    "title": "TypeScript Best Practices for Large-Scale Applications",
+    "description": "Advanced TypeScript guide covering type system features, generic programming, decorators, module organization, configuration optimization, integration with popular frameworks, migration strategies, and tooling setup."
+  },
+  {
+    "title": "Redis Caching Strategies for High-Performance Applications",
+    "description": "Comprehensive Redis tutorial covering data structures, caching patterns (cache-aside, write-through, write-behind), session management, pub/sub messaging, clustering, persistence options, and performance optimization."
+  },
+  {
+    "title": "Kubernetes Deployment and Management Essentials",
+    "description": "Practical Kubernetes guide covering pods, services, deployments, ConfigMaps, secrets, ingress controllers, monitoring with Prometheus, logging, troubleshooting, and best practices for production environments."
+  },
+  {
+    "title": "WebSocket Real-Time Communication Patterns",
+    "description": "Complete guide to WebSocket implementation covering connection management, message protocols, authentication, scaling considerations, fallback strategies, integration with frameworks (Socket.io, SignalR), and real-world use cases."
+  },
+  {
+    "title": "Python Async Programming: AsyncIO and Concurrent Futures",
+    "description": "Deep dive into Python asynchronous programming with asyncio, coroutines, event loops, concurrent futures, aiohttp for web requests, database async operations, performance benchmarks, and best practices for async code."
+  }
+]

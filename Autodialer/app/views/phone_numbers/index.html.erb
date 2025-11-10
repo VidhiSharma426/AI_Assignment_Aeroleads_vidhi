@@ -1,0 +1,321 @@
+<div class="row">
+  <!-- Page Header -->
+  <div class="col-12 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="h3 mb-0">
+          <i class="bi bi-telephone text-primary"></i>
+          Phone Numbers
+        </h1>
+        <p class="text-muted mb-0">Manage your contact list for autodialer campaigns</p>
+      </div>
+      <div>
+        <%= link_to "Add Number", new_phone_number_path, class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-primary"><%= @stats[:total] %></h4>
+        <p class="card-text text-muted mb-0">Total Numbers</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-warning"><%= @stats[:pending] %></h4>
+        <p class="card-text text-muted mb-0">Pending</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-success"><%= @stats[:completed] %></h4>
+        <p class="card-text text-muted mb-0">Completed</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="text-danger"><%= @stats[:failed] %></h4>
+        <p class="card-text text-muted mb-0">Failed</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Actions -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-upload"></i>
+          Bulk Upload
+        </h5>
+      </div>
+      <div class="card-body">
+        <%= form_with url: bulk_upload_phone_numbers_path, method: :post, multipart: true, local: true do |form| %>
+          <div class="mb-3">
+            <label for="file" class="form-label">Upload CSV/TXT File</label>
+            <%= form.file_field :file, class: "form-control", accept: ".csv,.txt" %>
+            <div class="form-text">Upload a file with phone numbers (one per line)</div>
+          </div>
+          <%= form.submit "Upload Numbers", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-clipboard"></i>
+          Paste Numbers
+        </h5>
+      </div>
+      <div class="card-body">
+        <%= form_with url: paste_numbers_phone_numbers_path, method: :post, local: true do |form| %>
+          <div class="mb-3">
+            <label for="numbers_text" class="form-label">Phone Numbers</label>
+            <%= form.text_area :numbers_text, class: "form-control", rows: 4, 
+                placeholder: "Paste phone numbers here (one per line)\nExample:\n9876543210\n1800123456\n+919988776655" %>
+          </div>
+          <%= form.submit "Add Numbers", class: "btn btn-success" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters and Actions -->
+<div class="row mb-3">
+  <div class="col-md-8">
+    <div class="btn-group" role="group">
+      <%= link_to "All", phone_numbers_path, 
+          class: "btn #{ params[:status].blank? ? 'btn-primary' : 'btn-outline-primary' }" %>
+      <%= link_to "Pending", phone_numbers_path(status: 'pending'), 
+          class: "btn #{ params[:status] == 'pending' ? 'btn-warning' : 'btn-outline-warning' }" %>
+      <%= link_to "Completed", phone_numbers_path(status: 'completed'), 
+          class: "btn #{ params[:status] == 'completed' ? 'btn-success' : 'btn-outline-success' }" %>
+      <%= link_to "Failed", phone_numbers_path(status: 'failed'), 
+          class: "btn #{ params[:status] == 'failed' ? 'btn-danger' : 'btn-outline-danger' }" %>
+    </div>
+  </div>
+  <div class="col-md-4 text-end">
+    <div class="btn-group">
+      <button class="btn btn-outline-success" onclick="startBulkCalling()">
+        <i class="bi bi-play-circle"></i>
+        Start Calling All
+      </button>
+      <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          Actions
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <%= link_to clear_all_phone_numbers_path, method: :delete, 
+                confirm: "Are you sure? This will delete all phone numbers and their call logs.", 
+                class: "dropdown-item text-danger" do %>
+              <i class="bi bi-trash"></i> Clear All Numbers
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phone Numbers Table -->
+<div class="card">
+  <div class="card-body">
+    <% if @phone_numbers.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Phone Number</th>
+              <th>Status</th>
+              <th>Call Attempts</th>
+              <th>Last Called</th>
+              <th>Source</th>
+              <th>Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @phone_numbers.each do |phone_number| %>
+              <tr>
+                <td>
+                  <div class="phone-number-display">
+                    <%= phone_number.formatted_number %>
+                  </div>
+                  <% if phone_number.notes.present? %>
+                    <small class="text-muted d-block">
+                      <i class="bi bi-sticky"></i>
+                      <%= truncate(phone_number.notes, length: 50) %>
+                    </small>
+                  <% end %>
+                </td>
+                <td>
+                  <span class="badge bg-<%= phone_status_color(phone_number.status) %>">
+                    <%= phone_number.status.humanize %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-secondary">
+                    <%= phone_number.call_attempts %>
+                  </span>
+                </td>
+                <td>
+                  <% if phone_number.last_called_at %>
+                    <span class="text-muted">
+                      <%= time_ago_in_words(phone_number.last_called_at) %> ago
+                    </span>
+                  <% else %>
+                    <span class="text-muted">Never</span>
+                  <% end %>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark">
+                    <%= phone_number.source.humanize %>
+                  </span>
+                </td>
+                <td class="text-muted">
+                  <%= phone_number.created_at.strftime("%m/%d/%Y") %>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to phone_number, class: "btn btn-outline-primary btn-sm" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if phone_number.can_be_called? %>
+                      <%= link_to make_call_phone_number_path(phone_number), method: :post, 
+                          class: "btn btn-outline-success btn-sm", 
+                          confirm: "Make a call to #{phone_number.formatted_number}?" do %>
+                        <i class="bi bi-telephone"></i>
+                      <% end %>
+                    <% end %>
+                    
+                    <%= link_to edit_phone_number_path(phone_number), class: "btn btn-outline-secondary btn-sm" do %>
+                      <i class="bi bi-pencil"></i>
+                    <% end %>
+                    
+                    <%= link_to phone_number, method: :delete, 
+                        class: "btn btn-outline-danger btn-sm",
+                        confirm: "Delete #{phone_number.formatted_number}?" do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination would go here if using will_paginate or similar -->
+      
+    <% else %>
+      <div class="text-center py-5">
+        <i class="bi bi-telephone-plus text-muted" style="font-size: 4rem;"></i>
+        <h4 class="text-muted mt-3">No Phone Numbers Found</h4>
+        <p class="text-muted">
+          <% if params[:status].present? %>
+            No phone numbers with status "<%= params[:status] %>" found.
+            <%= link_to "View all numbers", phone_numbers_path %>
+          <% else %>
+            Start by adding phone numbers to your autodialer campaign.
+          <% end %>
+        </p>
+        <div class="mt-3">
+          <%= link_to "Add Phone Number", new_phone_number_path, class: "btn btn-primary me-2" %>
+          <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#bulkAddHelp">
+            <i class="bi bi-question-circle"></i>
+            Need Help?
+          </button>
+        </div>
+        
+        <div class="collapse mt-3" id="bulkAddHelp">
+          <div class="card card-body text-start">
+            <h6>Ways to add phone numbers:</h6>
+            <ul class="mb-0">
+              <li><strong>Single Number:</strong> Use the "Add Phone Number" button</li>
+              <li><strong>Bulk Upload:</strong> Upload a CSV or TXT file with numbers</li>
+              <li><strong>Paste Numbers:</strong> Copy and paste multiple numbers at once</li>
+              <li><strong>Supported Formats:</strong> Indian mobile (10 digits) and toll-free (1800XXXXXXX)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  function startBulkCalling() {
+    const pendingCount = <%= @stats[:pending] %>;
+    
+    if (pendingCount === 0) {
+      alert('No pending phone numbers to call.');
+      return;
+    }
+    
+    if (confirm(`Start calling ${pendingCount} pending phone numbers?`)) {
+      fetch('/ai_commands/process_text_command', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ command: 'start calling all numbers' })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showAlert(data.response, 'success');
+          setTimeout(() => window.location.reload(), 2000);
+        } else {
+          showAlert('Failed to start autodialer', 'error');
+        }
+      });
+    }
+  }
+  
+  function showAlert(message, type = 'info') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+    
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 5000);
+  }
+</script>
+
+<%
+  def phone_status_color(status)
+    case status
+    when 'completed' then 'success'
+    when 'failed' then 'danger'
+    when 'calling' then 'warning'
+    when 'pending' then 'secondary'
+    else 'light'
+    end
+  end
+%>
